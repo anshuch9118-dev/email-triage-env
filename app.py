@@ -1,7 +1,6 @@
 import sys
 import os
 
-# Add current directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI
@@ -9,8 +8,6 @@ from server.environment import EmailTriageEnvironment
 from models import EmailTriageAction, EmailTriageObservation
 
 app = FastAPI(title="Email Triage Environment")
-
-# Create a single environment instance
 env = EmailTriageEnvironment()
 
 @app.get("/")
