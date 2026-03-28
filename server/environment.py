@@ -1,6 +1,5 @@
 import uuid
 from typing import Optional
-from openenv.core.env_server import Environment
 from models import EmailTriageAction, EmailTriageObservation, EmailTriageState
 
 
@@ -54,12 +53,13 @@ def grade_task3(action, email_data):
     return total, f"Urgency: {urgency_score:.0%}, Action: {action_score:.0%}, Response: {response_score:.0%}"
 
 
-class EmailTriageEnvironment(Environment):
-    SUPPORTS_CONCURRENT_SESSIONS = True
+class EmailTriageEnvironment:
     MAX_ATTEMPTS = 3
     
     def __init__(self):
         self._state = EmailTriageState(
+            episode_id=None,
+            step_count=0,
             current_task=1,
             total_tasks_completed=0,
             cumulative_score=0.0,
