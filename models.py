@@ -1,15 +1,14 @@
-# models.py
-from typing import List, Optional
-from openenv.core.env_server import Action, Observation, State
+from pydantic import BaseModel
+from typing import Optional, List
 
-
-class EmailTriageAction(Action):
+class EmailTriageAction(BaseModel):
     urgency: str
     action: str
     response_draft: Optional[str] = None
 
-
-class EmailTriageObservation(Observation):
+class EmailTriageObservation(BaseModel):
+    done: bool
+    reward: Optional[float]
     email_subject: str
     email_body: str
     task_id: int
@@ -17,9 +16,10 @@ class EmailTriageObservation(Observation):
     attempts_remaining: int
     feedback: str
 
-
-class EmailTriageState(State):
+class EmailTriageState(BaseModel):
+    episode_id: Optional[str]
+    step_count: int
     current_task: int
     total_tasks_completed: int
     cumulative_score: float
-    history: List[dict] = []
+    history: List[dict]
