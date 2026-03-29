@@ -1,0 +1,4 @@
+name: email-triage-env
+version: "1.0.0"
+description: Email triage environment with 3 tasks
+author: codeBug01
