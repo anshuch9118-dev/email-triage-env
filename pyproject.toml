@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "email-triage-env"
 version = "1.0.0"
@@ -14,7 +18,3 @@ dependencies = [
 
 [project.scripts]
 server = "server.app:main"
-
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
