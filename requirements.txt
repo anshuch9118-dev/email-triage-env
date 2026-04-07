@@ -1,5 +1,4 @@
-fastapi
-unicorn
-pydantic
-python-multipart
 requests
+fastapi
+uvicorn
+openenv-core>=0.2.0
