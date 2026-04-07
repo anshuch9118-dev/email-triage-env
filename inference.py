@@ -5,9 +5,14 @@ This script demonstrates how to interact with the environment using a simple age
 
 import requests
 import json
+import time
 
-# Space URL
-SPACE_URL = "https://codeBug01-email-triage-env.hf.space"
+# Wait for the server to start
+print("Waiting for server to start...")
+time.sleep(5)
+
+# Space URL - use localhost when running inside the Space
+SPACE_URL = "http://localhost:7860"
 
 def test_environment():
     """Test all endpoints of the environment."""
@@ -18,8 +23,12 @@ def test_environment():
     
     # Test 1: Health check
     print("\n1. Testing Health Check...")
-    response = requests.get(f"{SPACE_URL}/health")
-    print(f"   Health: {response.json()}")
+    try:
+        response = requests.get(f"{SPACE_URL}/health")
+        print(f"   Health: {response.json()}")
+    except Exception as e:
+        print(f"   Error: {e}")
+        return
     
     # Test 2: Reset the environment
     print("\n2. Resetting environment...")
