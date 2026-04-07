@@ -10,9 +10,32 @@ class Action(BaseModel):
     action: str
     response_draft: Optional[str] = None
 
-# Store state
-task_count = 0
-cumulative_score = 0.0
+# Store state for 3 tasks
+task_index = 0
+scores = []
+current_task = None
+
+# Define 3 tasks
+TASKS = [
+    {
+        "name": "classify_urgency",
+        "description": "Classify email urgency as urgent or normal",
+        "email_subject": "URGENT: Server Down",
+        "email_body": "The production server is not responding. Please fix immediately."
+    },
+    {
+        "name": "choose_action", 
+        "description": "Choose appropriate action (respond or archive)",
+        "email_subject": "Weekly Newsletter",
+        "email_body": "Check out our latest products and deals!"
+    },
+    {
+        "name": "draft_response",
+        "description": "Draft appropriate response for urgent emails",
+        "email_subject": "Order #12345 - Delayed Shipping",
+        "email_body": "My order hasn't arrived. Please help."
+    }
+]
 
 @app.get("/health")
 def health():
@@ -20,45 +43,65 @@ def health():
 
 @app.post("/reset")
 def reset():
-    global task_count, cumulative_score
-    task_count = 0
-    cumulative_score = 0.0
+    global task_index, scores, current_task
+    task_index = 0
+    scores = []
+    current_task = TASKS[0]
     return {
-        "task_description": "Classify the urgency of this email and take appropriate action",
-        "email_subject": "Urgent: System Down",
-        "email_body": "The production server is not responding. Please investigate immediately."
+        "task_description": current_task["description"],
+        "email_subject": current_task["email_subject"],
+        "email_body": current_task["email_body"]
     }
 
 @app.post("/step")
 def step(action: Action):
-    global task_count, cumulative_score
-    task_count += 1
+    global task_index, scores, current_task
     
-    # Simple scoring logic
+    # Calculate reward based on task type
     reward = 0.0
-    if action.urgency == "urgent":
-        reward = 1.0
-    elif action.urgency == "normal":
-        reward = 0.5
+    task_name = TASKS[task_index]["name"]
+    
+    if task_name == "classify_urgency":
+        if action.urgency == "urgent":
+            reward = 0.95  # Between 0 and 1
+        else:
+            reward = 0.05
+            
+    elif task_name == "choose_action":
+        if action.action == "respond":
+            reward = 0.9
+        else:
+            reward = 0.1
+            
+    elif task_name == "draft_response":
+        if action.response_draft and len(action.response_draft) > 20:
+            reward = 0.85
+        else:
+            reward = 0.15
+    
+    scores.append(reward)
+    
+    # Move to next task
+    task_index += 1
+    if task_index < len(TASKS):
+        current_task = TASKS[task_index]
     else:
-        reward = 0.0
-        
-    cumulative_score += reward
+        current_task = None
     
     return {
         "reward": reward,
-        "feedback": f"Action '{action.action}' processed with urgency '{action.urgency}'"
+        "feedback": f"Task {task_name} completed with reward {reward}"
     }
 
 @app.get("/state")
 def state():
+    total_score = sum(scores) / len(TASKS) if scores else 0
     return {
-        "cumulative_score": round(cumulative_score, 2),
-        "total_tasks_completed": task_count
+        "cumulative_score": round(total_score, 2),
+        "total_tasks_completed": len(scores)
     }
 
 def main():
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
