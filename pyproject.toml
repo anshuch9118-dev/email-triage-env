@@ -5,4 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "email-triage-env"
 version = "0.1.0"
-dependencies = ["requests"]
+dependencies = [
+    "requests",
+    "fastapi",
+    "uvicorn",
+    "openenv-core>=0.2.0",  # This fixes the missing dependency error
+]
+
+[project.scripts]
+# This fixes the "Missing [project.scripts] server entry point" error
+server = "app:main"  # Assumes you have a 'main' function in app.py to run the server
