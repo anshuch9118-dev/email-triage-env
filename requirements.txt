@@ -1,3 +1,5 @@
-requests
 fastapi
-uvicorn
+unicorn
+pydantic
+python-multipart
+requests
