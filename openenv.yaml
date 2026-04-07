@@ -1,4 +1,26 @@
-name: email-triage-env
-version: "1.0.0"
-description: Email triage environment with 3 tasks
-author: codeBug01
+version: 1
+
+tasks:
+  - name: classify_urgency
+    description: Classify email urgency as urgent or normal
+    grader:
+      type: llm_judge
+      prompt: |
+        The model should classify the email as 'urgent' if it requires immediate attention,
+        or 'normal' otherwise. Reward 0.95 for correct classification, 0.05 for incorrect.
+
+  - name: choose_action
+    description: Choose appropriate action (respond or archive)
+    grader:
+      type: llm_judge
+      prompt: |
+        The model should choose 'respond' for urgent emails requiring reply,
+        or 'archive' for newsletters and spam. Reward 0.9 for correct choice, 0.1 for incorrect.
+
+  - name: draft_response
+    description: Draft appropriate response for urgent emails
+    grader:
+      type: llm_judge
+      prompt: |
+        The model should draft a professional response addressing the email's concerns.
+        Reward 0.85 for good draft, 0.15 for poor or missing draft.
