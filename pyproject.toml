@@ -9,9 +9,9 @@ dependencies = [
     "requests",
     "fastapi",
     "uvicorn",
-    "openenv-core>=0.2.0",  # This fixes the missing dependency error
+    "openai",
+    "openenv-core>=0.2.0",
 ]
 
 [project.scripts]
-# This fixes the "Missing [project.scripts] server entry point" error
-server = "app:main"  # Assumes you have a 'main' function in app.py to run the server
+server = "app:main"
