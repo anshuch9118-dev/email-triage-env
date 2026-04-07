@@ -1,81 +1,62 @@
 """
-Inference script for Email Triage Environment.
-This script demonstrates how to interact with the environment using a simple agent.
+Inference script for Email Triage Environment with structured output.
 """
 
 import requests
 import json
 import time
+import sys
 
-# Wait for the server to start
-print("Waiting for server to start...")
+# Wait for server to start
 time.sleep(5)
 
-# Space URL - use localhost when running inside the Space
 SPACE_URL = "http://localhost:7860"
 
 def test_environment():
-    """Test all endpoints of the environment."""
-    
-    print("=" * 50)
-    print("Email Triage Environment - Inference Test")
-    print("=" * 50)
+    """Test all endpoints with structured output."""
     
     # Test 1: Health check
-    print("\n1. Testing Health Check...")
-    try:
-        response = requests.get(f"{SPACE_URL}/health")
-        print(f"   Health: {response.json()}")
-    except Exception as e:
-        print(f"   Error: {e}")
-        return
+    response = requests.get(f"{SPACE_URL}/health")
     
-    # Test 2: Reset the environment
-    print("\n2. Resetting environment...")
+    # Test 2: Reset environment
     response = requests.post(f"{SPACE_URL}/reset")
     reset_data = response.json()
-    print(f"   Task: {reset_data['task_description']}")
-    print(f"   Email Subject: {reset_data['email_subject']}")
-    print(f"   Email Body: {reset_data['email_body']}")
     
-    # Test 3: Take actions for all 3 tasks
-    print("\n3. Playing through tasks...")
+    # Print START block
+    print(f"[START] task=email_triage", flush=True)
     
     # Task 1: Urgent email
-    print("\n   Task 1 - Classifying urgency...")
-    action = {"urgency": "urgent", "action": "respond", "response_draft": "Will handle"}
-    response = requests.post(f"{SPACE_URL}/step", json=action)
-    result = response.json()
-    print(f"   Reward: {result['reward']}, Feedback: {result['feedback']}")
+    action1 = {"urgency": "urgent", "action": "respond", "response_draft": "Will handle"}
+    response = requests.post(f"{SPACE_URL}/step", json=action1)
+    result1 = response.json()
+    print(f"[STEP] step=1 reward={result1['reward']}", flush=True)
     
     # Task 2: Newsletter email
-    print("\n   Task 2 - Choosing action...")
-    action = {"urgency": "normal", "action": "archive", "response_draft": None}
-    response = requests.post(f"{SPACE_URL}/step", json=action)
-    result = response.json()
-    print(f"   Reward: {result['reward']}, Feedback: {result['feedback']}")
+    action2 = {"urgency": "normal", "action": "archive", "response_draft": None}
+    response = requests.post(f"{SPACE_URL}/step", json=action2)
+    result2 = response.json()
+    print(f"[STEP] step=2 reward={result2['reward']}", flush=True)
     
     # Task 3: Customer complaint
-    print("\n   Task 3 - Full triage...")
-    action = {
+    action3 = {
         "urgency": "urgent",
         "action": "respond",
-        "response_draft": "I apologize for the delay. Let me investigate your order and provide tracking information."
+        "response_draft": "I apologize for the delay. Let me investigate your order."
     }
-    response = requests.post(f"{SPACE_URL}/step", json=action)
-    result = response.json()
-    print(f"   Reward: {result['reward']}, Feedback: {result['feedback']}")
+    response = requests.post(f"{SPACE_URL}/step", json=action3)
+    result3 = response.json()
+    print(f"[STEP] step=3 reward={result3['reward']}", flush=True)
     
-    # Test 4: Get final state
-    print("\n4. Getting final state...")
+    # Get final state
     response = requests.get(f"{SPACE_URL}/state")
     state = response.json()
-    print(f"   Final Score: {state['cumulative_score']}/3.00")
-    print(f"   Tasks Completed: {state['total_tasks_completed']}/3")
     
-    print("\n" + "=" * 50)
-    print("✅ All tests passed!")
-    print("=" * 50)
+    # Calculate total score
+    total_score = state['cumulative_score']
+    total_steps = state['total_tasks_completed']
+    
+    # Print END block
+    print(f"[END] task=email_triage score={total_score} steps={total_steps}", flush=True)
 
 if __name__ == "__main__":
     test_environment()
