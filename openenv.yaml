@@ -1,26 +1,46 @@
 version: 1
 
+env:
+  name: email-triage-env
+  description: Email triage environment with 3 tasks
+
 tasks:
-  - name: classify_urgency
+  - id: task1
+    name: classify_urgency
     description: Classify email urgency as urgent or normal
     grader:
-      type: llm_judge
-      prompt: |
-        The model should classify the email as 'urgent' if it requires immediate attention,
-        or 'normal' otherwise. Reward 0.95 for correct classification, 0.05 for incorrect.
+      type: threshold
+      rubric:
+        - condition: "urgency == 'urgent'"
+          reward: 0.95
+        - condition: "urgency == 'normal'"
+          reward: 0.85
 
-  - name: choose_action
+  - id: task2
+    name: choose_action
     description: Choose appropriate action (respond or archive)
     grader:
-      type: llm_judge
-      prompt: |
-        The model should choose 'respond' for urgent emails requiring reply,
-        or 'archive' for newsletters and spam. Reward 0.9 for correct choice, 0.1 for incorrect.
+      type: threshold
+      rubric:
+        - condition: "action == 'respond' and urgency == 'urgent'"
+          reward: 0.9
+        - condition: "action == 'archive' and urgency == 'normal'"
+          reward: 0.8
+        - condition: "otherwise"
+          reward: 0.2
 
-  - name: draft_response
-    description: Draft appropriate response for urgent emails
+  - id: task3
+    name: draft_response
+    description: Draft appropriate response
     grader:
       type: llm_judge
       prompt: |
-        The model should draft a professional response addressing the email's concerns.
-        Reward 0.85 for good draft, 0.15 for poor or missing draft.
+        Evaluate if the response draft is professional and addresses the email.
+        Score between 0 and 1, not exactly 0 or 1.
+      rubric:
+        - condition: "draft is professional and relevant"
+          reward: 0.88
+        - condition: "draft is partially relevant"
+          reward: 0.55
+        - condition: "draft is missing or irrelevant"
+          reward: 0.15
