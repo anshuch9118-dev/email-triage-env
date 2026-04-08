@@ -1,31 +1,23 @@
 version: 1
-
 tasks:
-  - name: classify_urgency
-    description: "Classify email urgency as urgent or normal"
+  - name: "classify_urgency"
+    description: "Classify email urgency"
     grader:
-      type: threshold
+      type: "threshold"
       rubric:
-        - condition: "urgency == 'urgent'"
+        - condition: "reward >= 0.5"
           reward: 1.0
-        - condition: "urgency == 'normal'"
-          reward: 1.0
-
-  - name: choose_action
-    description: "Choose appropriate action (respond or archive)"
+  - name: "choose_action"
+    description: "Choose action"
     grader:
-      type: threshold
+      type: "threshold"
       rubric:
-        - condition: "action == 'respond' and urgency == 'urgent'"
+        - condition: "reward >= 0.5"
           reward: 1.0
-        - condition: "action == 'archive' and urgency == 'normal'"
-          reward: 1.0
-
-  - name: draft_response
-    description: "Draft appropriate response for customer email"
+  - name: "draft_response"
+    description: "Draft response"
     grader:
-      type: llm_judge
-      prompt: "Evaluate if the response draft professionally addresses the customer's concern."
+      type: "threshold"
       rubric:
-        - condition: "score >= 0.7"
+        - condition: "reward >= 0.5"
           reward: 1.0
