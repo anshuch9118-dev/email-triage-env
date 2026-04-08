@@ -2,22 +2,10 @@ version: 1
 tasks:
   - name: "classify_urgency"
     description: "Classify email urgency"
-    grader:
-      type: "threshold"
-      rubric:
-        - condition: "reward >= 0.5"
-          reward: 1.0
+    grader: "classify_urgency"
   - name: "choose_action"
     description: "Choose action"
-    grader:
-      type: "threshold"
-      rubric:
-        - condition: "reward >= 0.5"
-          reward: 1.0
+    grader: "choose_action"
   - name: "draft_response"
     description: "Draft response"
-    grader:
-      type: "threshold"
-      rubric:
-        - condition: "reward >= 0.5"
-          reward: 1.0
+    grader: "draft_response"
