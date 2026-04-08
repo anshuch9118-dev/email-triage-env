@@ -1,14 +1,43 @@
-version: 1
+version: "1.0.0"
+name: Email Triage Environment
+description: >
+  An environment for an AI agent to triage, prioritize, and route 
+  corporate emails based on urgency and content.
+author: YourName
+
+observation_space:
+  type: text
+  description: "Raw email text including header, subject, and body."
+
+action_space:
+  type: discrete
+  actions:
+    - P0_URGENT
+    - P1_NORMAL
+    - P2_LOW
+    - ROUTE_TO_DEVOPS
+    - ROUTE_TO_SUPPORT
+    - ARCHIVE
+  description: "The triage decision made by the agent."
+
+endpoints:
+  health: /
+  reset:  /reset
+  step:   /step
+  state:  /state
 
 tasks:
-  - name: "classify_urgency"
-    description: "Classify email urgency as urgent or normal"
-    grader: "classify_urgency"
+  - id: triage_critical_outage
+    description: "Identify a production outage email and mark as P0_URGENT."
+    steps: 1
+  - id: triage_customer_query
+    description: "Identify a billing question and route to ROUTE_TO_SUPPORT."
+    steps: 1
+  - id: triage_spam_filter
+    description: "Identify a newsletter and ARCHIVE."
+    steps: 1
 
-  - name: "choose_action"
-    description: "Choose appropriate action (respond or archive)"
-    grader: "choose_action"
-
-  - name: "draft_response"
-    description: "Draft appropriate response for customer email"
-    grader: "draft_response"
+scoring:
+  reward_range: [0.0, 1.0]
+  success_threshold: 0.5
+  score_formula: mean(step_rewards)
