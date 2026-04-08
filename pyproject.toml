@@ -10,7 +10,16 @@ dependencies = [
     "fastapi",
     "uvicorn",
     "openenv-core>=0.2.0",
+    "openai"
 ]
 
 [project.scripts]
 server = "app:main"
+
+[tool.openenv]
+entrypoint = "inference:run"
+
+[tool.openenv.graders]
+classify_urgency = "graders:classify_urgency_grader"
+choose_action = "graders:choose_action_grader"
+draft_response = "graders:draft_response_grader"
