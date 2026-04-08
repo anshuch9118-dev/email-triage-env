@@ -1,11 +1,14 @@
 version: 1
+
 tasks:
   - name: "classify_urgency"
-    description: "Classify email urgency"
+    description: "Classify email urgency as urgent or normal"
     grader: "classify_urgency"
+
   - name: "choose_action"
-    description: "Choose action"
+    description: "Choose appropriate action (respond or archive)"
     grader: "choose_action"
+
   - name: "draft_response"
-    description: "Draft response"
+    description: "Draft appropriate response for customer email"
     grader: "draft_response"
