@@ -1,25 +1,20 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from dataclasses import dataclass, field
+from typing import Optional
+from openenv.core.client_types import Action, Observation
 
-class EmailTriageAction(BaseModel):
-    urgency: str
-    action: str
+@dataclass
+class EmailAction(Action):
+    """Action for Email Triage environment."""
+    urgency: str  # "urgent" or "normal"
+    action: str   # "respond" or "archive"
     response_draft: Optional[str] = None
 
-class EmailTriageObservation(BaseModel):
-    done: bool
-    reward: Optional[float]
+@dataclass
+class EmailObservation(Observation):
+    """Observation returned after each step."""
     email_subject: str
     email_body: str
-    task_id: int
+    task_name: str
     task_description: str
-    attempts_remaining: int
-    feedback: str
-
-class EmailTriageState(BaseModel):
-    episode_id: Optional[str]
-    step_count: int
-    current_task: int
-    total_tasks_completed: int
-    cumulative_score: float
-    history: List[dict]
+    done: bool = False
+    reward: float = 0.0
