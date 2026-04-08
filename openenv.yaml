@@ -1,7 +1,7 @@
 version: 1
 
 tasks:
-  - name: classify_urgency
+  - name: classify_urgency          # ← TASK 1
     description: Classify email urgency as urgent or normal
     grader:
       type: threshold
@@ -10,10 +10,8 @@ tasks:
           reward: 0.95
         - condition: "urgency == 'normal'"
           reward: 0.85
-        - condition: "otherwise"
-          reward: 0.30
 
-  - name: choose_action
+  - name: choose_action             # ← TASK 2
     description: Choose appropriate action (respond or archive)
     grader:
       type: threshold
@@ -22,20 +20,10 @@ tasks:
           reward: 0.90
         - condition: "action == 'archive' and urgency == 'normal'"
           reward: 0.80
-        - condition: "otherwise"
-          reward: 0.20
 
-  - name: draft_response
+  - name: draft_response            # ← TASK 3
     description: Draft appropriate response for customer email
     grader:
       type: llm_judge
       prompt: |
         Evaluate if the response draft professionally addresses the customer's concern.
-        Score based on quality and relevance.
-      rubric:
-        - condition: "draft is professional, empathetic, and directly addresses the issue"
-          reward: 0.88
-        - condition: "draft is relevant but too short or missing key details"
-          reward: 0.55
-        - condition: "draft is missing, irrelevant, or unprofessional"
-          reward: 0.15
