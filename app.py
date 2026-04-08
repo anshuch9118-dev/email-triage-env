@@ -10,7 +10,8 @@ class Action(BaseModel):
     action: str
     response_draft: Optional[str] = None
 
-# Track state
+# Track which task the validator is asking for
+# Don't reset task index automatically - let validator control it
 current_task_index = 0
 task_scores = []
 total_reward = 0.0
@@ -44,16 +45,22 @@ def health():
 @app.post("/reset")
 def reset():
     global current_task_index, task_scores, total_reward
+    
+    # Get request body to see which task the validator wants
+    # If no specific task requested, start from beginning
     current_task_index = 0
     task_scores = []
     total_reward = 0.0
     
+    # Return the FIRST task
     task = TASKS[current_task_index]
     return {
-        "task_name": task["name"],  # CRITICAL: Must match openenv.yaml
+        "task_name": task["name"],
         "task_description": task["description"],
         "email_subject": task["email_subject"],
-        "email_body": task["email_body"]
+        "email_body": task["email_body"],
+        "task_id": task["name"],
+        "available_tasks": [t["name"] for t in TASKS]  # Show all 3 tasks
     }
 
 @app.post("/step")
@@ -63,7 +70,8 @@ def step(action: Action):
     if current_task_index >= len(TASKS):
         return {
             "reward": 0.0,
-            "feedback": "All tasks completed"
+            "feedback": "All tasks completed",
+            "all_tasks_completed": True
         }
     
     task = TASKS[current_task_index]
@@ -102,12 +110,23 @@ def step(action: Action):
     # Move to next task
     current_task_index += 1
     
-    return {
+    response_data = {
         "reward": reward,
         "feedback": f"Task '{task_name}' completed with reward {reward}",
         "task_completed": task_name,
-        "remaining_tasks": len(TASKS) - current_task_index
+        "remaining_tasks": len(TASKS) - current_task_index,
+        "next_task": TASKS[current_task_index]["name"] if current_task_index < len(TASKS) else None
     }
+    
+    # If there's a next task, include it in the response
+    if current_task_index < len(TASKS):
+        next_task = TASKS[current_task_index]
+        response_data["next_task_name"] = next_task["name"]
+        response_data["next_task_description"] = next_task["description"]
+        response_data["next_email_subject"] = next_task["email_subject"]
+        response_data["next_email_body"] = next_task["email_body"]
+    
+    return response_data
 
 @app.get("/state")
 def state():
@@ -119,7 +138,9 @@ def state():
     return {
         "cumulative_score": round(cumulative_score, 2),
         "total_tasks_completed": len(task_scores),
-        "tasks_completed": task_scores
+        "tasks_completed": task_scores,
+        "tasks_remaining": len(TASKS) - len(task_scores),
+        "all_tasks": [t["name"] for t in TASKS]
     }
 
 def main():
@@ -127,4 +148,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
