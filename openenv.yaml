@@ -1,12 +1,7 @@
 version: 1
 
-env:
-  name: email-triage-env
-  description: Email triage environment with 3 tasks
-
 tasks:
-  - id: task1
-    name: classify_urgency
+  - name: classify_urgency
     description: Classify email urgency as urgent or normal
     grader:
       type: threshold
@@ -15,32 +10,32 @@ tasks:
           reward: 0.95
         - condition: "urgency == 'normal'"
           reward: 0.85
+        - condition: "otherwise"
+          reward: 0.30
 
-  - id: task2
-    name: choose_action
+  - name: choose_action
     description: Choose appropriate action (respond or archive)
     grader:
       type: threshold
       rubric:
         - condition: "action == 'respond' and urgency == 'urgent'"
-          reward: 0.9
+          reward: 0.90
         - condition: "action == 'archive' and urgency == 'normal'"
-          reward: 0.8
+          reward: 0.80
         - condition: "otherwise"
-          reward: 0.2
+          reward: 0.20
 
-  - id: task3
-    name: draft_response
-    description: Draft appropriate response
+  - name: draft_response
+    description: Draft appropriate response for customer email
     grader:
       type: llm_judge
       prompt: |
-        Evaluate if the response draft is professional and addresses the email.
-        Score between 0 and 1, not exactly 0 or 1.
+        Evaluate if the response draft professionally addresses the customer's concern.
+        Score based on quality and relevance.
       rubric:
-        - condition: "draft is professional and relevant"
+        - condition: "draft is professional, empathetic, and directly addresses the issue"
           reward: 0.88
-        - condition: "draft is partially relevant"
+        - condition: "draft is relevant but too short or missing key details"
           reward: 0.55
-        - condition: "draft is missing or irrelevant"
+        - condition: "draft is missing, irrelevant, or unprofessional"
           reward: 0.15
