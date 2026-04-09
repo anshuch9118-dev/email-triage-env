@@ -1,18 +1,14 @@
-version: "1.0.0"
-name: email-triage-env
-description: "Email triage for Meta Hackathon"
+version: 1
 
 tasks:
-  - id: classify_urgency
-    description: "Identify urgency"
+  - name: classify_urgency
+    description: Identify urgency
     grader: classify_urgency
-  - id: choose_action
-    description: "Select response action"
-    grader: choose_action
-  - id: draft_response
-    description: "Generate email draft"
-    grader: draft_response
 
-scoring:
-  reward_range: [0.01, 0.99]
-  success_threshold: 0.5
+  - name: choose_action
+    description: Select response action
+    grader: choose_action
+
+  - name: draft_response
+    description: Generate email draft
+    grader: draft_response
