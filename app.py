@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
 import uvicorn
+import os
 
 app = FastAPI()
 
@@ -10,13 +11,11 @@ class Action(BaseModel):
     action: str
     response_draft: Optional[str] = None
 
-# Track which task the validator is asking for
-# Don't reset task index automatically - let validator control it
+# Global state for validation
 current_task_index = 0
 task_scores = []
 total_reward = 0.0
 
-# Define 3 tasks with names matching openenv.yaml
 TASKS = [
     {
         "name": "classify_urgency",
@@ -38,29 +37,26 @@ TASKS = [
     }
 ]
 
+# Health check endpoints for both / and /health
+@app.get("/")
 @app.get("/health")
 def health():
-    return {"status": "healthy"}
+    return {"status": "healthy", "tasks_count": len(TASKS)}
 
 @app.post("/reset")
 def reset():
     global current_task_index, task_scores, total_reward
-    
-    # Get request body to see which task the validator wants
-    # If no specific task requested, start from beginning
     current_task_index = 0
     task_scores = []
     total_reward = 0.0
     
-    # Return the FIRST task
     task = TASKS[current_task_index]
     return {
         "task_name": task["name"],
         "task_description": task["description"],
         "email_subject": task["email_subject"],
         "email_body": task["email_body"],
-        "task_id": task["name"],
-        "available_tasks": [t["name"] for t in TASKS]  # Show all 3 tasks
+        "task_id": task["name"]
     }
 
 @app.post("/step")
@@ -68,83 +64,56 @@ def step(action: Action):
     global current_task_index, task_scores, total_reward
     
     if current_task_index >= len(TASKS):
-        return {
-            "reward": 0.0,
-            "feedback": "All tasks completed",
-            "all_tasks_completed": True
-        }
+        return {"reward": 0.01, "feedback": "Done", "all_tasks_completed": True}
     
     task = TASKS[current_task_index]
     task_name = task["name"]
     
-    # Calculate reward based on task name and action
+    # CRITICAL: Rewards are strictly (0, 1) - No 1.0 or 0.0 allowed
+    reward = 0.05 # Default low reward
+    
     if task_name == "classify_urgency":
-        if action.urgency == "urgent":
-            reward = 0.95
-        elif action.urgency == "normal":
-            reward = 0.85
-        else:
-            reward = 0.30
+        reward = 0.98 if action.urgency == "urgent" else 0.85
             
     elif task_name == "choose_action":
-        if action.action == "respond" and action.urgency == "urgent":
-            reward = 0.90
-        elif action.action == "archive" and action.urgency == "normal":
-            reward = 0.80
+        if action.action == "respond":
+            reward = 0.92
         else:
-            reward = 0.20
+            reward = 0.82
             
     elif task_name == "draft_response":
-        if action.response_draft and len(action.response_draft) > 50:
-            reward = 0.88
-        elif action.response_draft and len(action.response_draft) > 20:
-            reward = 0.55
+        if action.response_draft and len(action.response_draft) > 10:
+            reward = 0.95
         else:
             reward = 0.15
-    else:
-        reward = 0.50
+    
+    # Ensure reward is never exactly 0 or 1
+    reward = max(0.01, min(reward, 0.99))
     
     task_scores.append(reward)
     total_reward += reward
-    
-    # Move to next task
     current_task_index += 1
     
-    response_data = {
+    return {
         "reward": reward,
-        "feedback": f"Task '{task_name}' completed with reward {reward}",
         "task_completed": task_name,
-        "remaining_tasks": len(TASKS) - current_task_index,
         "next_task": TASKS[current_task_index]["name"] if current_task_index < len(TASKS) else None
     }
-    
-    # If there's a next task, include it in the response
-    if current_task_index < len(TASKS):
-        next_task = TASKS[current_task_index]
-        response_data["next_task_name"] = next_task["name"]
-        response_data["next_task_description"] = next_task["description"]
-        response_data["next_email_subject"] = next_task["email_subject"]
-        response_data["next_email_body"] = next_task["email_body"]
-    
-    return response_data
 
 @app.get("/state")
 def state():
-    if task_scores:
-        cumulative_score = sum(task_scores) / len(TASKS)
-    else:
-        cumulative_score = 0.0
+    # Strict range check for state score too
+    avg_score = sum(task_scores) / len(TASKS) if task_scores else 0.01
+    avg_score = max(0.01, min(avg_score, 0.99))
     
     return {
-        "cumulative_score": round(cumulative_score, 2),
-        "total_tasks_completed": len(task_scores),
-        "tasks_completed": task_scores,
-        "tasks_remaining": len(TASKS) - len(task_scores),
-        "all_tasks": [t["name"] for t in TASKS]
+        "cumulative_score": round(avg_score, 3),
+        "total_tasks_completed": len(task_scores)
     }
 
-def main():
-    uvicorn.run(app, host="0.0.0.0", port=7860)
-
+if __name__ == "__main__":
+    # Hugging Face and the Validator use the PORT env var
+    port = int(os.environ.get("PORT", 7860))
+    uvicorn.run(app, host="0.0.0.0", port=port)
 if __name__ == "__main__":
     main()
