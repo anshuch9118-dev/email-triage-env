@@ -2,13 +2,10 @@ version: 1
 
 tasks:
   - name: classify_urgency
-    description: Identify urgency
-    grader: classify_urgency
+    grader: graders.classify_urgency_grader
 
   - name: choose_action
-    description: Select response action
-    grader: choose_action
+    grader: graders.choose_action_grader
 
   - name: draft_response
-    description: Generate email draft
-    grader: draft_response
+    grader: graders.draft_response_grader
