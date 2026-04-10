@@ -4,34 +4,23 @@ from typing import Optional
 import uvicorn
 import os
 
-# --- FORCE REGISTRY LOADING ---
-try:
-    import graders
-    from openenv.core.env_server.interfaces import get_grader
-    print("--- VALIDATOR DEBUG START ---")
-    for tid in ["classify_urgency", "choose_action", "draft_response"]:
-        exists = get_grader(tid) is not None
-        print(f"Task {tid} Grader Registered: {exists}")
-    print("--- VALIDATOR DEBUG END ---")
-except Exception as e:
-    print(f"Registry Error: {e}")
-# ------------------------------
-
 app = FastAPI()
 
 class Action(BaseModel):
-    urgency: str
-    action: str
+    urgency: Optional[str] = ""
+    action: Optional[str] = ""
     response_draft: Optional[str] = None
 
-task_count = 0
-total_reward = 0.0
+class ResetRequest(BaseModel):
+    task_id: Optional[str] = "classify_urgency"
 
-TASKS = [
-    {"name": "classify_urgency", "subject": "URGENT: Server Down", "body": "Server not responding"},
-    {"name": "choose_action", "subject": "Weekly Newsletter", "body": "Check our products"},
-    {"name": "draft_response", "subject": "Order #12345", "body": "My order hasn't arrived"}
-]
+TASKS = {
+    "classify_urgency": {"subject": "URGENT: Server Down",   "body": "Server not responding"},
+    "choose_action":    {"subject": "Weekly Newsletter",      "body": "Check our products"},
+    "draft_response":   {"subject": "Order #12345",           "body": "My order hasn't arrived"},
+}
+
+current_task_id = "classify_urgency"
 
 @app.get("/")
 @app.get("/health")
@@ -39,31 +28,48 @@ def health():
     return {"status": "healthy", "tasks_found": 3}
 
 @app.post("/reset")
-def reset():
-    global task_count, total_reward
-    task_count = 0
-    total_reward = 0.0
-    task = TASKS[0]
+def reset(req: ResetRequest = None):
+    global current_task_id
+    task_id = req.task_id if req and req.task_id in TASKS else "classify_urgency"
+    current_task_id = task_id
+    task = TASKS[task_id]
     return {
-        "task_name": task["name"],
-        "task_id": task["name"],
+        "task_id":       task_id,
+        "task_name":     task_id,
         "email_subject": task["subject"],
-        "email_body": task["body"]
+        "email_body":    task["body"],
     }
 
 @app.post("/step")
 def step(action: Action):
-    global task_count, total_reward
-    # Strict range 0.01 - 0.99
-    reward = 0.98 if "urgent" in action.urgency.lower() else 0.55
-    task_count += 1
-    total_reward += reward
-    return {"reward": reward, "done": True, "feedback": "Processed"}
+    global current_task_id
+    reward = 0.0
+
+    if current_task_id == "classify_urgency":
+        reward = 0.95 if action.urgency in ["urgent", "normal"] else 0.1
+
+    elif current_task_id == "choose_action":
+        reward = 0.92 if action.action in ["respond", "archive"] else 0.1
+
+    elif current_task_id == "draft_response":
+        reward = 0.95 if action.response_draft and len(action.response_draft) > 10 else 0.1
+
+    return {"reward": round(reward, 3), "done": True, "feedback": "Processed"}
 
 @app.get("/state")
 def state():
-    avg = total_reward / 3 if task_count > 0 else 0.01
-    return {"cumulative_score": round(max(0.01, min(avg, 0.99)), 3)}
+    return {"status": "active", "current_task": current_task_id}
+
+@app.get("/tasks")
+def list_tasks():
+    # Some validators call this endpoint to discover tasks
+    return {
+        "tasks": [
+            {"id": "classify_urgency", "name": "Classify Email Urgency"},
+            {"id": "choose_action",    "name": "Choose Email Action"},
+            {"id": "draft_response",   "name": "Draft Email Response"},
+        ]
+    }
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 7860))
