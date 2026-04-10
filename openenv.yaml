@@ -9,10 +9,19 @@ author: codeBug01
 tasks:
   - id: classify_urgency
     name: Classify Email Urgency
-    grader: graders:classify_urgency_grader
+    grader:
+      type: http
+      endpoint: /grader
+      method: POST
   - id: choose_action
     name: Choose Email Action
-    grader: graders:choose_action_grader
+    grader:
+      type: http
+      endpoint: /grader
+      method: POST
   - id: draft_response
     name: Draft Email Response
-    grader: graders:draft_response_grader
+    grader:
+      type: http
+      endpoint: /grader
+      method: POST
