@@ -1,22 +1,8 @@
-version: 1
-tasks:
-  - id: classify_urgency
-    name: Classify Email Urgency
-    grader:
-      type: function
-      module: graders
-      function: classify_urgency_grader
-
-  - id: choose_action
-    name: Choose Email Action
-    grader:
-      type: function
-      module: graders
-      function: choose_action_grader
-
-  - id: draft_response
-    name: Draft Email Response
-    grader:
-      type: function
-      module: graders
-      function: draft_response_grader
+id: email-triage-env-v1
+name: Email Triage Environment
+version: 1.0.0
+type: environment
+sdk: openenv
+description: A real-world email triage RL environment where agents classify urgency, choose actions, and draft responses.
+entrypoint: app:app
+author: codeBug01
