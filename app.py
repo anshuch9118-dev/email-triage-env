@@ -5,7 +5,11 @@ from typing import Optional
 import uvicorn
 import os
 
-app = FastAPI()
+app = FastAPI(
+    title="Email Triage Environment",
+    version="1.0.0",
+    description="Real-world email triage RL environment with 3 tasks."
+)
 
 # --- Models ---
 class Action(BaseModel):
@@ -180,6 +184,16 @@ sdk: openenv
 description: Real-world email triage RL environment with 3 tasks.
 entrypoint: app:app
 author: codeBug01
+tasks:
+  - id: classify_urgency
+    name: Classify Email Urgency
+    grader: graders:classify_urgency_grader
+  - id: choose_action
+    name: Choose Email Action
+    grader: graders:choose_action_grader
+  - id: draft_response
+    name: Draft Email Response
+    grader: graders:draft_response_grader
 """
 
 if __name__ == "__main__":
