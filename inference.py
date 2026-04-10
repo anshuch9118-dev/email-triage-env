@@ -1,106 +1,113 @@
-import requests
+import os
 import json
 import time
-import os
 import sys
+from typing import List, Optional
 from openai import OpenAI
+import requests
 
-time.sleep(5)
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
+SPACE_URL = os.getenv("SPACE_URL", "https://codeBug01-email-triage-env.hf.space")
 
-# ✅ Exact variable names from requirements
-API_BASE_URL = os.environ.get("API_BASE_URL")
-MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-3.5-turbo")
-HF_TOKEN = os.environ.get("HF_TOKEN")
-SPACE_URL = os.environ.get("SPACE_URL", "https://codeBug01-email-triage-env.hf.space")
-
-print(f"API_BASE_URL: {API_BASE_URL}", flush=True)
-print(f"MODEL_NAME: {MODEL_NAME}", flush=True)
-print(f"HF_TOKEN present: {HF_TOKEN is not None}", flush=True)
-
-if not API_BASE_URL or not HF_TOKEN:
-    print("ERROR: API_BASE_URL or HF_TOKEN not set", flush=True)
-    sys.exit(1)
-
-# ✅ OpenAI client with correct variables
-client = OpenAI(
-    base_url=API_BASE_URL,
-    api_key=HF_TOKEN,
-)
+TASK_NAME = "email-triage"
+BENCHMARK = "email-triage-env-v1"
 
 TASKS = ["classify_urgency", "choose_action", "draft_response"]
 
-def call_llm(prompt):
+def log_start(task: str, env: str, model: str):
+    print(f"[START] task={task} env={env} model={model}", flush=True)
+
+def log_step(step: int, action: str, reward: float, done: bool, error: Optional[str]):
+    error_val = error if error else "null"
+    done_val = str(done).lower()
+    print(f"[STEP] step={step} action={action} reward={reward:.2f} done={done_val} error={error_val}", flush=True)
+
+def log_end(success: bool, steps: int, score: float, rewards: List[float]):
+    rewards_str = ",".join(f"{r:.2f}" for r in rewards)
+    print(f"[END] success={str(success).lower()} steps={steps} score={score:.2f} rewards={rewards_str}", flush=True)
+
+def get_llm_decision(client, task_id, email_subject, email_body):
     try:
-        response = client.chat.completions.create(
-            model=MODEL_NAME,  # ✅ use MODEL_NAME not hardcoded string
+        prompt = f"""You are an email triage assistant.
+Task: {task_id}
+Subject: {email_subject}
+Body: {email_body}
+
+Respond with JSON only:
+{{"urgency": "urgent or normal", "action": "respond or archive", "response_draft": "a reply if needed"}}"""
+
+        completion = client.chat.completions.create(
+            model=MODEL_NAME,
             messages=[
-                {"role": "system", "content": "You are an email triage assistant. Respond with JSON only. No markdown."},
+                {"role": "system", "content": "You are an email triage assistant. Respond with JSON only, no markdown."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.1,
             max_tokens=150,
-            timeout=10
         )
-        result_text = response.choices[0].message.content.strip()
-        result_text = result_text.replace("```json", "").replace("```", "").strip()
-        return json.loads(result_text)
+        content = completion.choices[0].message.content.strip()
+        content = content.replace("```json", "").replace("```", "").strip()
+        return json.loads(content)
     except Exception as e:
-        print(f"LLM error: {e}, using fallback", flush=True)
+        print(f"LLM error: {e}", flush=True)
         return {
             "urgency": "urgent",
             "action": "respond",
-            "response_draft": "Thank you for your email. I will look into this immediately and get back to you."
+            "response_draft": "Thank you for your email. I will look into this immediately and respond shortly."
         }
 
 def run():
-    # ✅ Strict [START] format
-    print(f"[START] task=email_triage env=email-triage-env", flush=True)
+    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
 
-    total_reward = 0.0
+    log_start(task=TASK_NAME, env=BENCHMARK, model=MODEL_NAME)
 
-    for step_num, task_id in enumerate(TASKS, 1):
+    rewards = []
+    steps_taken = 0
+    success = False
+    score = 0.0
 
-        # Reset with specific task_id
-        resp = requests.post(
-            f"{SPACE_URL}/reset",
-            json={"task_id": task_id},
-            timeout=10
-        )
-        task_data = resp.json()
+    try:
+        for step, task_id in enumerate(TASKS, 1):
+            # Reset with specific task
+            resp = requests.post(f"{SPACE_URL}/reset", json={"task_id": task_id}, timeout=15)
+            task_data = resp.json()
 
-        prompt = f"""
-Classify this email for task: {task_id}
-Subject: {task_data.get('email_subject', '')}
-Body: {task_data.get('email_body', '')}
+            # Get LLM decision
+            decision = get_llm_decision(
+                client,
+                task_id,
+                task_data.get("email_subject", ""),
+                task_data.get("email_body", "")
+            )
 
-Return JSON:
-{{
-    "urgency": "urgent or normal",
-    "action": "respond or archive",
-    "response_draft": "write a reply here if task is draft_response"
-}}
-"""
-        llm_output = call_llm(prompt)
+            action = {
+                "urgency": decision.get("urgency", "normal"),
+                "action": decision.get("action", "respond"),
+                "response_draft": decision.get("response_draft", "Thank you for contacting us.")
+            }
 
-        action = {
-            "urgency": llm_output.get("urgency", "normal"),
-            "action": llm_output.get("action", "respond"),
-            "response_draft": llm_output.get("response_draft", "Thank you for contacting us. We will respond shortly.")
-        }
+            # Step the environment
+            resp = requests.post(f"{SPACE_URL}/step", json=action, timeout=15)
+            result = resp.json()
+            reward = float(result.get("reward", 0.0))
+            done = result.get("done", True)
 
-        resp = requests.post(f"{SPACE_URL}/step", json=action, timeout=10)
-        result = resp.json()
-        reward = round(float(result.get("reward", 0.0)), 2)
-        total_reward += reward
+            rewards.append(reward)
+            steps_taken = step
 
-        # ✅ Strict [STEP] format
-        print(f"[STEP] step={step_num} task={task_id} reward={reward}", flush=True)
-        time.sleep(0.5)
+            log_step(step=step, action=task_id, reward=reward, done=done, error=None)
+            time.sleep(0.5)
 
-    final_score = round(total_reward / 3, 3)
+        score = sum(rewards) / len(rewards) if rewards else 0.0
+        success = score >= 0.5
 
-    # ✅ Strict [END] format
-    print(f"[END] task=email_triage score={final_score} steps=3", flush=True)
+    except Exception as e:
+        log_step(step=steps_taken + 1, action="error", reward=0.0, done=True, error=str(e))
+
+    finally:
+        log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
 
 if __name__ == "__main__":
     run()
