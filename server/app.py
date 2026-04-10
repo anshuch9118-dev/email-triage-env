@@ -1,6 +1,8 @@
+import sys
+import os
+sys.path.insert(0, "/app")
 from app import app
 import uvicorn
-import os
 
 def main():
     port = int(os.environ.get("PORT", 7860))
