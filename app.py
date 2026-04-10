@@ -50,7 +50,6 @@ TASKS = {
 }
 
 current_task_id = "classify_urgency"
-episode_rewards = {}
 
 # --- Grader functions ---
 def grade_classify_urgency(data: dict) -> float:
@@ -88,12 +87,26 @@ def list_tasks():
     return {
         "tasks": [
             {
-                "id": tid,
-                "name": t["name"],
-                "description": t["description"],
-                "difficulty": t["difficulty"]
-            }
-            for tid, t in TASKS.items()
+                "id": "classify_urgency",
+                "name": "Classify Email Urgency",
+                "description": "Easy: Classify email as urgent or normal",
+                "difficulty": "easy",
+                "grader": {"type": "function", "endpoint": "/grader"}
+            },
+            {
+                "id": "choose_action",
+                "name": "Choose Email Action",
+                "description": "Medium: Choose correct action for email",
+                "difficulty": "medium",
+                "grader": {"type": "function", "endpoint": "/grader"}
+            },
+            {
+                "id": "draft_response",
+                "name": "Draft Email Response",
+                "description": "Hard: Draft a response to customer email",
+                "difficulty": "hard",
+                "grader": {"type": "function", "endpoint": "/grader"}
+            },
         ]
     }
 
@@ -138,7 +151,6 @@ def state():
         "tasks_available": list(TASKS.keys()),
     }
 
-# ✅ THIS IS THE MISSING ENDPOINT — validator calls this directly
 @app.post("/grader")
 def grader(req: GraderRequest):
     task_id = req.task_id or current_task_id
