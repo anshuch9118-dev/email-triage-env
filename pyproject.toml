@@ -14,8 +14,11 @@ dependencies = [
     "pydantic",
 ]
 
+[project.scripts]
+server = "server.app:main"
+
 [tool.openenv]
-entrypoint = "app:app"
+entrypoint = "server.app:app"
 tasks = [
     {id = "classify_urgency", name = "Classify Email Urgency", grader = "graders:classify_urgency_grader"},
     {id = "choose_action", name = "Choose Email Action", grader = "graders:choose_action_grader"},
