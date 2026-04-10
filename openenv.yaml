@@ -4,7 +4,7 @@ version: 1.0.0
 type: environment
 sdk: openenv
 description: Real-world email triage RL environment with 3 tasks.
-entrypoint: app:app
+entrypoint: server.app:app
 author: codeBug01
 tasks:
   - id: classify_urgency
