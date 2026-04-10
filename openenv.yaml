@@ -3,6 +3,16 @@ name: Email Triage Environment
 version: 1.0.0
 type: environment
 sdk: openenv
-description: A real-world email triage RL environment where agents classify urgency, choose actions, and draft responses.
+description: Real-world email triage RL environment with 3 tasks.
 entrypoint: app:app
 author: codeBug01
+tasks:
+  - id: classify_urgency
+    name: Classify Email Urgency
+    grader: graders:classify_urgency_grader
+  - id: choose_action
+    name: Choose Email Action
+    grader: graders:choose_action_grader
+  - id: draft_response
+    name: Draft Email Response
+    grader: graders:draft_response_grader
