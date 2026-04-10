@@ -1,17 +1,22 @@
 version: 1
-
 tasks:
-  - name: task1
+  - id: classify_urgency
+    name: Classify Email Urgency
     grader:
-      type: constant
-      value: 0.9
+      type: function
+      module: graders
+      function: classify_urgency_grader
 
-  - name: task2
+  - id: choose_action
+    name: Choose Email Action
     grader:
-      type: constant
-      value: 0.8
+      type: function
+      module: graders
+      function: choose_action_grader
 
-  - name: task3
+  - id: draft_response
+    name: Draft Email Response
     grader:
-      type: constant
-      value: 0.85
+      type: function
+      module: graders
+      function: draft_response_grader
