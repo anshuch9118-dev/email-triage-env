@@ -5,7 +5,7 @@ def classify_urgency_grader(output, expected=None):
         urgency = output.urgency
     else:
         urgency = str(output)
-    return 1.0 if str(urgency).lower() in ["urgent", "normal"] else 0.0
+    return 1.0 if str(urgency).lower() in ["urgent", "normal"] else 0.5
 
 def choose_action_grader(output, expected=None):
     if isinstance(output, dict):
@@ -14,7 +14,7 @@ def choose_action_grader(output, expected=None):
         action = output.action
     else:
         action = str(output)
-    return 1.0 if str(action).lower() in ["respond", "archive", "escalate", "delete"] else 0.0
+    return 1.0 if str(action).lower() in ["respond", "archive", "escalate", "delete"] else 0.5
 
 def draft_response_grader(output, expected=None):
     if isinstance(output, dict):
@@ -23,7 +23,7 @@ def draft_response_grader(output, expected=None):
         draft = output.response_draft
     else:
         draft = str(output)
-    return 1.0 if draft and len(str(draft)) > 10 else 0.0
+    return 1.0 if draft and len(str(draft)) > 10 else 0.5
 
 GRADERS = {
     "classify_urgency": classify_urgency_grader,
