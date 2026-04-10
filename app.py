@@ -11,6 +11,7 @@ app = FastAPI(
     description="Real-world email triage RL environment with 3 tasks."
 )
 
+# --- Models ---
 class Action(BaseModel):
     urgency: Optional[str] = ""
     action: Optional[str] = ""
@@ -27,6 +28,7 @@ class GraderRequest(BaseModel):
     action: Optional[str] = None
     response_draft: Optional[str] = None
 
+# --- Task definitions ---
 TASKS = {
     "classify_urgency": {
         "name": "Classify Email Urgency",
@@ -53,6 +55,7 @@ TASKS = {
 
 current_task_id = "classify_urgency"
 
+# --- Grader functions ---
 def grade_classify_urgency(data: dict) -> float:
     urgency = data.get("urgency", "")
     if isinstance(urgency, str) and urgency.lower() in ["urgent", "normal"]:
@@ -77,10 +80,51 @@ GRADERS = {
     "draft_response": grade_draft_response,
 }
 
+# --- Endpoints ---
 @app.get("/")
 @app.get("/health")
 def health():
     return {"status": "healthy", "service": "email-triage-env"}
+
+@app.get("/metadata")
+def metadata():
+    return {
+        "name": "Email Triage Environment",
+        "description": "Real-world email triage RL environment with 3 tasks.",
+        "version": "1.0.0",
+        "tasks": list(TASKS.keys()),
+    }
+
+@app.get("/schema")
+def schema():
+    return {
+        "action": {
+            "type": "object",
+            "properties": {
+                "urgency": {"type": "string", "enum": ["urgent", "normal"]},
+                "action": {"type": "string", "enum": ["respond", "archive", "escalate", "delete"]},
+                "response_draft": {"type": "string"},
+            }
+        },
+        "observation": {
+            "type": "object",
+            "properties": {
+                "email_subject": {"type": "string"},
+                "email_body": {"type": "string"},
+                "task_id": {"type": "string"},
+                "done": {"type": "boolean"},
+                "reward": {"type": "number"},
+            }
+        },
+        "state": {
+            "type": "object",
+            "properties": {
+                "current_task": {"type": "string"},
+                "tasks_available": {"type": "array"},
+                "status": {"type": "string"},
+            }
+        }
+    }
 
 @app.get("/tasks")
 def list_tasks():
