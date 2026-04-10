@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Any
 import uvicorn
 import os
 
@@ -60,19 +60,19 @@ def grade_classify_urgency(data: dict) -> float:
     urgency = data.get("urgency", "")
     if isinstance(urgency, str) and urgency.lower() in ["urgent", "normal"]:
         return 0.95
-    return 0.1
+    return 0.5
 
 def grade_choose_action(data: dict) -> float:
     action = data.get("action", "")
     if isinstance(action, str) and action.lower() in ["respond", "archive", "escalate", "delete"]:
         return 0.92
-    return 0.1
+    return 0.5
 
 def grade_draft_response(data: dict) -> float:
     draft = data.get("response_draft", "") or data.get("answer", "")
     if draft and len(str(draft)) > 10:
         return 0.95
-    return 0.1
+    return 0.5
 
 GRADERS = {
     "classify_urgency": grade_classify_urgency,
@@ -126,6 +126,21 @@ def schema():
         }
     }
 
+@app.post("/mcp")
+async def mcp(req: Any = None):
+    return {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+            "tools": [
+                {"name": "reset", "description": "Reset the environment"},
+                {"name": "step", "description": "Take a step in the environment"},
+                {"name": "state", "description": "Get current state"},
+                {"name": "grader", "description": "Grade a task response"},
+            ]
+        }
+    }
+
 @app.get("/tasks")
 def list_tasks():
     return {
@@ -157,7 +172,7 @@ def step(action: Action):
     global current_task_id
     data = {"urgency": action.urgency, "action": action.action, "response_draft": action.response_draft}
     grader = GRADERS.get(current_task_id)
-    reward = grader(data) if grader else 0.1
+    reward = grader(data) if grader else 0.5
     return {"reward": round(reward, 3), "done": True, "feedback": "Processed", "score": round(reward, 3)}
 
 @app.get("/state")
