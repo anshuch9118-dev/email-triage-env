@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 import uvicorn
@@ -22,10 +23,47 @@ TASKS = {
 
 current_task_id = "classify_urgency"
 
+# ✅ THIS IS THE KEY FIX — serve openenv.yaml over HTTP
+@app.get("/openenv.yaml", response_class=PlainTextResponse)
+def serve_openenv_yaml():
+    return """version: 1
+tasks:
+  - id: classify_urgency
+    name: Classify Email Urgency
+    grader:
+      type: function
+      module: graders
+      function: classify_urgency_grader
+
+  - id: choose_action
+    name: Choose Email Action
+    grader:
+      type: function
+      module: graders
+      function: choose_action_grader
+
+  - id: draft_response
+    name: Draft Email Response
+    grader:
+      type: function
+      module: graders
+      function: draft_response_grader
+"""
+
 @app.get("/")
 @app.get("/health")
 def health():
     return {"status": "healthy", "tasks_found": 3}
+
+@app.get("/tasks")
+def list_tasks():
+    return {
+        "tasks": [
+            {"id": "classify_urgency", "name": "Classify Email Urgency"},
+            {"id": "choose_action",    "name": "Choose Email Action"},
+            {"id": "draft_response",   "name": "Draft Email Response"},
+        ]
+    }
 
 @app.post("/reset")
 def reset(req: ResetRequest = None):
@@ -59,17 +97,6 @@ def step(action: Action):
 @app.get("/state")
 def state():
     return {"status": "active", "current_task": current_task_id}
-
-@app.get("/tasks")
-def list_tasks():
-    # Some validators call this endpoint to discover tasks
-    return {
-        "tasks": [
-            {"id": "classify_urgency", "name": "Classify Email Urgency"},
-            {"id": "choose_action",    "name": "Choose Email Action"},
-            {"id": "draft_response",   "name": "Draft Email Response"},
-        ]
-    }
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 7860))
