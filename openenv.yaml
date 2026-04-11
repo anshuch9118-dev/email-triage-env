@@ -1,27 +1,29 @@
-id: email-triage-env-v1
-name: Email Triage Environment
-version: 1.0.0
-type: environment
-sdk: openenv
-description: Real-world email triage RL environment with 3 tasks.
-entrypoint: server.app:app
-author: codeBug01
+version: 1
+
 tasks:
-  - id: classify_urgency
-    name: Classify Email Urgency
+  - name: classify_urgency
+    description: Classify email urgency as urgent or normal
     grader:
-      type: http
-      endpoint: /grader
-      method: POST
-  - id: choose_action
-    name: Choose Email Action
+      type: threshold
+      rubric:
+        - condition: "urgency == 'urgent'"
+          reward: 0.95
+        - condition: "urgency == 'normal'"
+          reward: 0.85
+
+  - name: choose_action
+    description: Choose appropriate action (respond or archive)
     grader:
-      type: http
-      endpoint: /grader
-      method: POST
-  - id: draft_response
-    name: Draft Email Response
+      type: threshold
+      rubric:
+        - condition: "action == 'respond' and urgency == 'urgent'"
+          reward: 0.90
+        - condition: "action == 'archive' and urgency == 'normal'"
+          reward: 0.80
+
+  - name: draft_response
+    description: Draft appropriate response for customer email
     grader:
-      type: http
-      endpoint: /grader
-      method: POST
+      type: llm_judge
+      prompt: |
+        Evaluate if the response draft professionally addresses the customer's concern.
