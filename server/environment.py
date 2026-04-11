@@ -35,32 +35,31 @@ class EmailEnvironment(Environment):
             }
         ]
 
-    def get_tasks(self):
-        """EXPOSES TASKS TO THE VALIDATOR API"""
+   def get_tasks(self):
+        # The validator counts a task ONLY if it sees 'grader' in this API response
         return [
             {
                 "id": "classify_urgency",
                 "name": "Classify Urgency",
-                "description": "Categorize email urgency",
                 "difficulty": "easy",
-                "score_range": [0.1, 0.99]
+                "score_range": [0.1, 0.9],
+                "grader": {"type": "threshold"} # This signals the validator
             },
             {
                 "id": "choose_action",
                 "name": "Choose Action",
-                "description": "Select respond or archive",
                 "difficulty": "medium",
-                "score_range": [0.1, 0.99]
+                "score_range": [0.1, 0.9],
+                "grader": {"type": "threshold"}
             },
             {
                 "id": "draft_response",
                 "name": "Draft Response",
-                "description": "LLM response generation",
                 "difficulty": "hard",
-                "score_range": [0.1, 0.99]
+                "score_range": [0.1, 0.9],
+                "grader": {"type": "llm_judge"}
             }
         ]
-
     def reset(self) -> EmailObservation:
         self._state = State(episode_id=str(uuid4()), step_count=0)
         self.current_task_index = 0
