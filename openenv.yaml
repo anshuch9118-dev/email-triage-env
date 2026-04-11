@@ -1,10 +1,12 @@
 version: 1
+name: EmailTriageEnv
+description: "Email triage environment for customer support."
+
 tasks:
-  - id: "classify_urgency"
+  - id: "classify_urgency"  # Must match the API ID exactly
     name: "Classify Urgency"
-    description: "Categorize email urgency"
     difficulty: "easy"
-    score_range: [0.1, 0.99]
+    score_range: [0.1, 0.9] # Strictly not 0 or 1
     grader:
       type: "threshold"
       threshold: 0.5
@@ -12,9 +14,8 @@ tasks:
 
   - id: "choose_action"
     name: "Choose Action"
-    description: "Select respond or archive"
     difficulty: "medium"
-    score_range: [0.1, 0.99]
+    score_range: [0.1, 0.9]
     grader:
       type: "threshold"
       threshold: 0.5
@@ -22,9 +23,8 @@ tasks:
 
   - id: "draft_response"
     name: "Draft Response"
-    description: "LLM response generation"
     difficulty: "hard"
-    score_range: [0.1, 0.99]
+    score_range: [0.1, 0.9]
     grader:
       type: "llm_judge"
-      prompt: "Rate the response quality from 0.1 to 0.99 based on professionalism."
+      prompt: "Does the draft professionally resolve the customer inquiry? Rate 0.1 to 0.9."
