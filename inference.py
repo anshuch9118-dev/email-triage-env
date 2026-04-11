@@ -34,30 +34,28 @@ def call_llm(prompt):
         try:
             return json.loads(result_text)
         except:
-            if "urgent" in result_text.lower():
-                return {"urgency": "urgent", "action": "respond"}
-            else:
-                return {"urgency": "normal", "action": "archive"}
+            return {"urgency": "urgent", "action": "respond"} if "urgent" in result_text.lower() else {"urgency": "normal", "action": "archive"}
     except Exception as e:
         print(f"LLM error: {e}", flush=True)
         return {"urgency": "urgent", "action": "respond"}
 
 def test_environment():
-    print(f"[START] task=email_triage", flush=True)
+    # Define 3 distinct tasks - MUST loop through each
+    task_ids = ["classify_urgency", "choose_action", "draft_response"]
     
-    # Define 3 distinct tasks - CRITICAL: Must loop through multiple tasks
-    tasks = ["classify_urgency", "choose_action", "draft_response"]
+    total_score = 0
     
-    total_reward = 0
-    
-    for task_index, task_name in enumerate(tasks, 1):
-        print(f"Processing task {task_index}: {task_name}", flush=True)
+    for idx, task_id in enumerate(task_ids, 1):
+        print(f"\n=== Running task {idx}: {task_id} ===", flush=True)
         
-        # Reset environment for each task
+        # Start the task
+        print(f"[START] task={task_id}", flush=True)
+        
+        # Reset environment for this task
         resp = requests.post(f"{SPACE_URL}/reset", timeout=10)
         task_data = resp.json()
         
-        # Create prompt for LLM
+        # Create prompt from email
         prompt = f"""
         Classify this email:
         Subject: {task_data.get('email_subject', '')}
@@ -71,18 +69,23 @@ def test_environment():
         action = {
             "urgency": llm_output.get("urgency", "normal"),
             "action": llm_output.get("action", "archive"),
-            "response_draft": f"Response for {task_name}"
+            "response_draft": f"Response for {task_id}"
         }
         
         resp = requests.post(f"{SPACE_URL}/step", json=action, timeout=10)
         result = resp.json()
         reward = result.get('reward', 0.5)
-        total_reward += reward
+        total_score += reward
         
-        print(f"[STEP] step={task_index} task={task_name} reward={reward}", flush=True)
+        # Step output
+        print(f"[STEP] step=1 reward={reward}", flush=True)
+        
+        # End the task
+        print(f"[END] task={task_id} score={reward} steps=1", flush=True)
+        
         time.sleep(0.5)
     
-    print(f"[END] task=email_triage score={total_reward/3:.2f} steps=3", flush=True)
+    print(f"\n[FINAL] total_score={total_score} average={total_score/3:.2f}", flush=True)
 
 if __name__ == "__main__":
     test_environment()
