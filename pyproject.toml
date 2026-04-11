@@ -5,12 +5,17 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "email-triage-env"
 version = "0.1.0"
+description = "Email Triage Environment for Meta PyTorch Hackathon"
+authors = [
+    {name = "Anshu Chauhan", email = "anshuch9118@gmail.com"},
+]
 dependencies = [
-    "requests",
-    "fastapi",
-    "uvicorn",
-    "openai",
+    "requests>=2.31.0",
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "openai>=1.0.0",
     "openenv-core>=0.2.0",
+    "pydantic>=2.0.0",
 ]
 
 [project.scripts]
@@ -18,8 +23,18 @@ server = "server.app:main"
 
 [tool.openenv]
 entrypoint = "inference:run"
+name = "email-triage-env"
+version = "0.1.0"
 
 [tool.openenv.graders]
 classify_urgency = "graders:classify_urgency_grader"
 choose_action = "graders:choose_action_grader"
 draft_response = "graders:draft_response_grader"
+
+[tool.openenv.tasks]
+classify_urgency = { description = "Classify email urgency as urgent or normal" }
+choose_action = { description = "Choose appropriate action (respond or archive)" }
+draft_response = { description = "Draft appropriate response for customer email" }
+
+[tool.uv]
+dev-dependencies = []
