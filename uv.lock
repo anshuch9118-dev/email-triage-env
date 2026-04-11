@@ -2,297 +2,228 @@ version = 1
 requires-python = ">=3.10"
 
 [[package]]
+name = "email-triage-env"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+  { name = "fastapi" },
+  { name = "openai" },
+  { name = "openenv-core" },
+  { name = "pydantic" },
+  { name = "requests" },
+  { name = "uvicorn" },
+]
+
+[package.dev-dependencies]
+
+[package.metadata]
+requires-dist = [
+  { name = "fastapi" },
+  { name = "openai" },
+  { name = "openenv-core", specifier = ">=0.2.0" },
+  { name = "pydantic" },
+  { name = "requests" },
+  { name = "uvicorn" },
+]
+
+[[package]]
+name = "fastapi"
+version = "0.115.12"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "pydantic" },
+  { name = "starlette" },
+  { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fastapi-0.115.12.tar.gz" }
+
+[[package]]
+name = "openai"
+version = "1.75.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "anyio" },
+  { name = "distro" },
+  { name = "httpx" },
+  { name = "jiter" },
+  { name = "pydantic" },
+  { name = "sniffio" },
+  { name = "tqdm" },
+  { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/openai-1.75.0.tar.gz" }
+
+[[package]]
+name = "openenv-core"
+version = "0.2.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "fastapi" },
+  { name = "pydantic" },
+  { name = "uvicorn" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/openenv_core-0.2.3.tar.gz" }
+
+[[package]]
+name = "pydantic"
+version = "2.11.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "annotated-types" },
+  { name = "pydantic-core" },
+  { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/pydantic-2.11.4.tar.gz" }
+
+[[package]]
+name = "requests"
+version = "2.32.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "certifi" },
+  { name = "charset-normalizer" },
+  { name = "idna" },
+  { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/requests-2.32.3.tar.gz" }
+
+[[package]]
+name = "uvicorn"
+version = "0.34.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "click" },
+  { name = "h11" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/uvicorn-0.34.0.tar.gz" }
+
+[[package]]
 name = "annotated-types"
 version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ee/67/531ea369ba64dcff5ec9c3402f9f51bf748cec26dde044a2f54a3df4df35/annotated_types-0.7.0.tar.gz", hash = "sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/09/6838f7c538b83eebd6b01691cbb117c2c2b4a2bc98e95aa8c0e1e97283b2/annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/annotated_types-0.7.0.tar.gz" }
 
 [[package]]
 name = "anyio"
-version = "4.12.0"
+version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "exceptiongroup" },
-    { name = "idna" },
-    { name = "typing-extensions" },
+  { name = "idna" },
+  { name = "sniffio" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/21/ab/3dfd9e6b15e1f5946b21bfcbc9b86d5fefbdea62401e3b6a723b63044cda/anyio-4.12.0.tar.gz", hash = "sha256:5d5de45501877fde067a513722ba4e32fcdcfc14ab04b18d99bc311f3f8cd1e5" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/9c/36c5c37947ebfb8c7f55e0cf24827cd1db2e8c01d46fb226f9e04488e53c/anyio-4.12.0-py3-none-any.whl", hash = "sha256:7a62764fe7f63d8d028c6ccbe3f0c52b7c0353a74b8c9a1601b1cba31b8b3887" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/anyio-4.9.0.tar.gz" }
 
 [[package]]
 name = "certifi"
-version = "2025.11.12"
+version = "2025.1.31"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a2/8c/1f9091c475d39006ec0f8e01667464c2591ecbc5da1d1886ce46ab7a0ae7/certifi-2025.11.12.tar.gz", hash = "sha256:d5a94b2f71fd5b5be1fecb712e54f3538aad8091322fa9cbec1f63131b65d34f" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/70/7d/9bc192684cea499815ff478dfcdc13835ddf401365057044fb721ec6bddb/certifi-2025.11.12-py3-none-any.whl", hash = "sha256:d35ffb0c067e34f097fef34273e8aef7eb844ff131014a70bcd6bd77c591c0c9" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/certifi-2025.1.31.tar.gz" }
 
 [[package]]
 name = "charset-normalizer"
-version = "3.4.4"
+version = "3.4.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/97/58/c9bdb9b7d3a67b91826db7bf0011bd7d3a7b19b95b5cf2cc126d67b7c595/charset_normalizer-3.4.4.tar.gz", hash = "sha256:94573e09de72f1557d28f7b37dfba9d2d027cf2cf5cfe82cb6e7cae619192bc6" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/45/4b3a1239bbacd321068ea6e7ac28875b03ab8bc0aa0966452db17de3676f/charset_normalizer-3.4.4-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:b02d51a0c2b13bddb60f6b01f5f1c18ebde256972f31b5c72e2c96bce21acf29" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/charset_normalizer-3.4.1.tar.gz" }
 
 [[package]]
 name = "click"
-version = "8.3.1"
+version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+  { name = "colorama" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/74/34/6c4f503f4a17c6d6a1540efc3526b83c6a2ae6a10bdab088d7eb1e0b5609/click-8.3.1.tar.gz", hash = "sha256:0e349697b632c79896b4d2a3b66b7db7acd0e0d5b708c302162cc729457a8b89" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/99/61/16b54f7945302b57620751c087417d7a4fa4bb6a55ad8b2ecfdf178dbea8/click-8.3.1-py3-none-any.whl", hash = "sha256:6144a0732dbe70b38071804c40e600b103792bf7d7a18d86b7cfdf4e28b04ffd" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/click-8.1.8.tar.gz" }
 
 [[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/colorama-0.4.6.tar.gz" }
 
 [[package]]
-name = "email-triage-env"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "fastapi" },
-    { name = "openai" },
-    { name = "openenv-core" },
-    { name = "requests" },
-    { name = "uvicorn" },
-]
-
-[[package]]
-name = "exceptiongroup"
-version = "1.3.1"
+name = "distro"
+version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/1b/1f/e590f7902dc94ecdebe174a90b2ce51f19a31ac5a6502c41800bc9ddb67d/exceptiongroup-1.3.1.tar.gz", hash = "sha256:3168a35d2ef7b0136d5513e754a9e9cf8a03e2e13065c4f27fea864bc81e179e" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/8a/0e/97c9dd041c88e7cc80379dcf6a46503b46caa855bd60a0d5cdcf090eab07/exceptiongroup-1.3.1-py3-none-any.whl", hash = "sha256:ad4492b8a698ffb8f19014a325234184e228fd43ee194da861b8a4f25eb984d7" },
-]
-
-[[package]]
-name = "fastapi"
-version = "0.115.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pydantic" },
-    { name = "starlette" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/58/51/20fecd1c4a1fa120a89142f8cbcae66aebd47a5b02b59edec4d61b8027e0/fastapi-0.115.0.tar.gz", hash = "sha256:f93b4ca3529a8ebc6fc3fcf710e5efa8de3df9b41570958abf1d97d843138004" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b5/03/6c51973e119068df3c057618b79958eacd92c81f3b0b52c985573b234c36/fastapi-0.115.0-py3-none-any.whl", hash = "sha256:2033b2500e3455f3e127d0b7e328b8e59e36c732b1d2dcc34bcca71e1e9f6d9e" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/distro-1.9.0.tar.gz" }
 
 [[package]]
 name = "h11"
-version = "0.16.0"
+version = "0.14.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6d/3e/6ab92d9dd0b51e063d65fe085c3bd97ff7d1453a147fba1082c83bd1a02c/h11-0.16.0.tar.gz", hash = "sha256:4e35b956cf45792e4caa5885e69fba00aabdcdb7e49698e2a2a9b5ef225ac029" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/ea/9c2adcafe76806c1e9572d7b41e0a6f733601aedc5b0e7d63a9a106d4937/h11-0.16.0-py3-none-any.whl", hash = "sha256:cf3a4bb79fa6f528bf0b3ff123bd0f2a24aa4ef28ec3bc48ce704f4d8743bdad" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/h11-0.14.0.tar.gz" }
 
 [[package]]
 name = "httpcore"
-version = "1.0.9"
+version = "1.0.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "certifi" },
-    { name = "h11" },
+  { name = "certifi" },
+  { name = "h11" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/51/0c/bff7a6aa7291b7f62b8f17e8e81ea156be483a646500c73dccf13044a63b/httpcore-1.0.9.tar.gz", hash = "sha256:6e34463af53fd2ab5d807f399a9b45ea31c3fb1523ea2b99bbd10e62cd9d3de2" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1c/09/679d043584d84fa42064faa4732e65fc980ebf4d9720b2662258ab1f2795/httpcore-1.0.9-py3-none-any.whl", hash = "sha256:2d400746a40668fc9de5a2b2c2b08b32b9f5427e6a1c7bb934b26f9e8b4d4056" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/httpcore-1.0.7.tar.gz" }
 
 [[package]]
 name = "httpx"
 version = "0.28.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "anyio" },
-    { name = "certifi" },
-    { name = "httpcore" },
-    { name = "idna" },
+  { name = "anyio" },
+  { name = "certifi" },
+  { name = "httpcore" },
+  { name = "idna" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/79/2b/f5b5bea17468ed9f5cfda5c4831cba755f6a3a2fc85efdda66d2554ebdf5/httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/21/87723dacb4e47e9dc0b7dcb9f873cd27c9143b623d01f7f5df397fb5197f/httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909f756110f3aeea84663e9ea6d3ceb3ec5aa0161c3e217ea6e4545de1d68d4" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/httpx-0.28.1.tar.gz" }
 
 [[package]]
 name = "idna"
-version = "3.11"
+version = "3.10"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0f/2d/8ccc9626ce556e5d63a0b2d28f7b7aef4635df1c8fe66574c8c95303bc50/idna-3.11.tar.gz", hash = "sha256:ba4cde29644c64ef59c7723a28f61762fbe99b28c0b631f558a6d3cfa0fc2c0c" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0e/48/bd4978c78dd7e33a9c7b37e40fb176559c888d3fc52c5a57b62ab6b33a87/idna-3.11-py3-none-any.whl", hash = "sha256:12f65c9b470abda6dc35cf8e68cc416f8c93f67a21e4344eab9ffa7aa7d5309a" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/idna-3.10.tar.gz" }
 
 [[package]]
-name = "openai"
-version = "1.99.6"
+name = "jiter"
+version = "0.9.0"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "anyio" },
-    { name = "distro" },
-    { name = "httpx" },
-    { name = "jiter" },
-    { name = "pydantic" },
-    { name = "sniffio" },
-    { name = "tqdm" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/97/f8/6ca13873556b3a778419aa1e07c2e87aa2ef97d47a4c32eaf7bda9e61dda/openai-1.99.6.tar.gz", hash = "sha256:4b32a1a0dfb2bb148c742b7dbdef7ea26d007b6985ffbb06534716e8e8633cae" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/2d/e3456a30d87c3fc7e52f6e7a4ba0c4ba747bcc1b5e4aae5eb99b476a94c2/openai-1.99.6-py3-none-any.whl", hash = "sha256:e1c2af98c6bc41ab2a195eac62ea051e619b5bf966f52f299221bbfb9bdcbfd1" },
-]
-
-[[package]]
-name = "openenv-core"
-version = "0.2.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "fastapi" },
-    { name = "httpx" },
-    { name = "pydantic" },
-    { name = "typing-extensions" },
-    { name = "uvicorn" },
-    { name = "websockets" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/xx/xxx/openenv_core-0.2.2.tar.gz", hash = "sha256:xxxx" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/xx/xxx/openenv_core-0.2.2-py3-none-any.whl", hash = "sha256:xxxx" },
-]
-
-[[package]]
-name = "pydantic"
-version = "2.12.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "annotated-types" },
-    { name = "pydantic-core" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/44/f0/cb1fa97e18a1b0d47b3c600bc28aecbb10faec1eae431d421095cd486cd3/pydantic-2.12.5.tar.gz", hash = "sha256:8ab67b5e18e7b9f2c116f4cdec7ad6e71caf434bdd6fddd3b1ef69420e5cdaeb" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e5/7d/10bbd1c3cafb0232c27f7c8e0ddb11e8ed5d6095aa5b4df7fcd1bc4486b6/pydantic-2.12.5-py3-none-any.whl", hash = "sha256:90746f1e660b6b6d9c6eab2b58d5cb91e618f6e00e08270735a958d73a68099c" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/jiter-0.9.0.tar.gz" }
 
 [[package]]
 name = "pydantic-core"
-version = "2.41.3"
+version = "2.33.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions" },
+  { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/66/09/58f11731cd1e9a40f6294de56e54ad6a2d12c07c9586822b628bbf5472b6/pydantic_core-2.41.3.tar.gz", hash = "sha256:ed48a30f325f054505874bea2ab7ac2138c4b3362b13a3f0f1b69e9a9c09cbd0" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fe/6a/01b63dd012be7cd83d983f490ba7a8bcfabab4843ea68401639196a42ae2/pydantic_core-2.41.3-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:0387aa0b70de9311c90b1936455e25ef2785b32dabed1b2d97a7464008e3eb05" },
-]
-
-[[package]]
-name = "requests"
-version = "2.32.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "certifi" },
-    { name = "charset-normalizer" },
-    { name = "idna" },
-    { name = "urllib3" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5f/63/a35bb4872ec2bca51ab44d6a9d6a0c9922a0aadf02a54fc0894afaa13307/requests-2.32.5.tar.gz", hash = "sha256:670d4dff5b7d1df996b70f950c2959e2b6a4e8621f5c4c5a9c25614206f7e21b" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1ddf98cfa6452ec2a/requests-2.32.5-py3-none-any.whl", hash = "sha256:f542d87dfac9d192ae77179011da03b7ccea6b8f0b3b64d6d6a294d42223f115" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/pydantic_core-2.33.2.tar.gz" }
 
 [[package]]
 name = "sniffio"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a2/87/a6771e1546d1e7f7e2f841126bbee9d628a84b2bc59008cbd2538bc3510b/sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/sniffio-1.3.1.tar.gz" }
 
 [[package]]
 name = "starlette"
-version = "0.37.2"
+version = "0.46.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "anyio" },
+  { name = "anyio" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ff/18/b2e6eaeaef6f1f1241dab7b617f1b23f7a57acbefbd6faac5a9b8d0b7f55/starlette-0.37.2.tar.gz", hash = "sha256:9af890290133e79c99f096f2acf0c60e033b5836d674afc3bc8881b04a8262a4" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e2/89/24ef6ac294010cdd9576ed8acb1e6af7ab9fb4fdaa2565042af7ad052af0/starlette-0.37.2-py3-none-any.whl", hash = "sha256:6fe59f292ef38a731e2c0faa43ec2b0f4dd74a3becc44659fe319ad0875c9dae" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/starlette-0.46.2.tar.gz" }
 
 [[package]]
 name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/e8/4b/0b3831fe418c4fb598c0c07f4ab911652d3747ff691563125bcbdbb1660c/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e630272866986f" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b5/be/e87549eb58e04499e6542967fc5a57c9fe3c9856d7ba799a6a08ae2248e5/tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e6321ec59dfb3dcac25" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/tqdm-4.67.1.tar.gz" }
 
 [[package]]
 name = "typing-extensions"
-version = "4.15.0"
+version = "4.13.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c1/58/97e9931b327b3f124bbee3486e862edee6485f80c316f42a6d10c1c2b2b3/typing_extensions-4.15.0.tar.gz", hash = "sha256:0b5e2710c2b3d0b28f242a194d51726ef50e7b4a506a44ddfe2e0b8a8fd7125c" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3c/1b/156f729542ca2fcef5bbf148800aca65a71fde51acd58cf0cfb5c2c9b2e3/typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:6b975479ed0e64367e4821e762d72d4e1c72dd9b04f9cee24760b1a7749ba516" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/typing_extensions-4.13.2.tar.gz" }
 
 [[package]]
 name = "urllib3"
-version = "2.6.2"
+version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fd/4f/9ec0edc9f8f7a9de11c710faa6b66648f064cdcbf28f9d29320f490cf9a9/urllib3-2.6.2.tar.gz", hash = "sha256:df89da7921d0e18d57b642e3d098f4a69e705cd46a48af7b6f4ce12a4bc656e6" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4b/77/1c763db4a4ee17d999db4192e80f3b4634dc52cc77358417c5dd97da1d94/urllib3-2.6.2-py3-none-any.whl", hash = "sha256:684a71b5f99cf488b9bb6d346be9f55c0c69b14ccef335b95bc69c35c1b14b2d" },
-]
-
-[[package]]
-name = "uvicorn"
-version = "0.38.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "click" },
-    { name = "h11" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/fe/b6/6b206e2d1e8acb9846991a1f0f362b7f8fae0f243f5623cf13d31d8926bc/uvicorn-0.38.0.tar.gz", hash = "sha256:4b759cef49a1c2bdfe374b45979ef6d5f5672fe27b00a9e72c1c6dda9f6c6809" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/6f/6d/719cb063178e4ae01d6a87dfd70d473a21a5d14b1d52dde0fdd37b41c34b/uvicorn-0.38.0-py3-none-any.whl", hash = "sha256:6e328a8b2a276a71e82458043d27dfa6b2bca04862a8afdcbace9600cf31c56b" },
-]
-
-[[package]]
-name = "websockets"
-version = "15.0.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/22/02/fd78f048d67c73c74b1c504893d0a41aac7c08a76cc6daf2afcd3884d7e5/websockets-15.0.1.tar.gz", hash = "sha256:e2c261daa2b279d228a36715ab0719633685421261cc0c6280b491b805bb2f63" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/87/a7/d699b3f1c39d31a0ffb5fffcb1d93f4e8ec144c2eb2b12dcde0ad33c166b/websockets-15.0.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:cb640edbd6e594e2f85e6fa52e7ac2d006c2e3db82f50a2b80b1d50b4e77d534" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/urllib3-2.3.0.tar.gz" }
