@@ -1,9 +1,13 @@
 version: 1
+name: EmailTriageEnv
+description: "Email triage environment for classifying and responding to customer emails."
 
 tasks:
   - id: classify_urgency
     name: classify_urgency
-    description: Classify email urgency as urgent or normal
+    description: "Classify email urgency as urgent or normal"
+    difficulty: easy
+    score_range: [0.0, 1.0]
     grader:
       type: threshold
       rubric:
@@ -14,7 +18,9 @@ tasks:
 
   - id: choose_action
     name: choose_action
-    description: Choose appropriate action (respond or archive)
+    description: "Choose appropriate action (respond or archive)"
+    difficulty: medium
+    score_range: [0.0, 1.0]
     grader:
       type: threshold
       rubric:
@@ -25,8 +31,9 @@ tasks:
 
   - id: draft_response
     name: draft_response
-    description: Draft appropriate response for customer email
+    description: "Draft appropriate response for customer email"
+    difficulty: hard
+    score_range: [0.0, 1.0]
     grader:
       type: llm_judge
-      prompt: |
-        Evaluate if the response draft professionally addresses the customer's concern.
+      prompt: "Evaluate if the response draft professionally addresses the customer's concern and provides a clear solution."
