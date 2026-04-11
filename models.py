@@ -1,16 +1,18 @@
-from pydantic import BaseModel
+from dataclasses import dataclass
 from typing import Optional
+from openenv.core.client_types import Action, Observation
 
-
-class EmailAction(BaseModel):
-    urgency: Optional[str] = ""
-    action: Optional[str] = ""
+@dataclass
+class EmailAction(Action):
+    urgency: str
+    action: str
     response_draft: Optional[str] = None
 
-
-class EmailObservation(BaseModel):
+@dataclass
+class EmailObservation(Observation):
     email_subject: str = ""
     email_body: str = ""
-    task_id: str = ""
+    task_name: str = ""
+    task_description: str = ""
     done: bool = False
     reward: float = 0.0
