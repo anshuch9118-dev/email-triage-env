@@ -1,29 +1,28 @@
 version: 1
 
 tasks:
-  - id: classify_urgency
-    name: classify_urgency
-    difficulty: easy
-    max_steps: 15
-    description: Classify email urgency as urgent or normal
+  - name: classify_urgency
+    description: Classify email urgency
     grader:
-      type: llm
-      prompt_template: "Score the classification 0.0 to 1.0"
+      type: threshold
+      rubric:
+        - condition: "urgency == 'urgent'"
+          reward: 0.95
+        - condition: "urgency == 'normal'"
+          reward: 0.85
 
-  - id: choose_action
-    name: choose_action
-    difficulty: medium
-    max_steps: 15
-    description: Choose appropriate action (respond or archive)
+  - name: choose_action
+    description: Choose appropriate action
     grader:
-      type: llm
-      prompt_template: "Score the action choice 0.0 to 1.0"
+      type: threshold
+      rubric:
+        - condition: "action == 'respond'"
+          reward: 0.90
+        - condition: "action == 'archive'"
+          reward: 0.80
 
-  - id: draft_response
-    name: draft_response
-    difficulty: hard
-    max_steps: 15
-    description: Draft appropriate response for customer email
+  - name: draft_response
+    description: Draft response
     grader:
-      type: llm
-      prompt_template: "Score the response quality 0.0 to 1.0"
+      type: llm_judge
+      prompt: "Evaluate response quality"
