@@ -11,23 +11,15 @@ dependencies = [
     "uvicorn",
     "openai",
     "openenv-core>=0.2.0",
-    "pydantic",
 ]
 
 [project.scripts]
-server = "server.app:main"
-
-[tool.setuptools]
-py-modules = ["app", "graders", "models", "inference"]
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["server*"]
+server = "server.app:app"
 
 [tool.openenv]
-entrypoint = "server.app:app"
-tasks = [
-    {id = "classify_urgency", name = "Classify Email Urgency", grader = "graders:classify_urgency_grader"},
-    {id = "choose_action", name = "Choose Email Action", grader = "graders:choose_action_grader"},
-    {id = "draft_response", name = "Draft Email Response", grader = "graders:draft_response_grader"},
-]
+entrypoint = "inference:run"
+
+[tool.openenv.graders]
+classify_urgency = "graders:classify_urgency_grader"
+choose_action = "graders:choose_action_grader"
+draft_response = "graders:draft_response_grader"
