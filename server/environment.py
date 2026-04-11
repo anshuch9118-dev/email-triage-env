@@ -10,54 +10,52 @@ class EmailEnvironment(Environment):
         self.cumulative_score = 0.0
         self.completed_tasks = []
 
-        self.tasks = [
-            {
-                "id": "classify_urgency",
-                "name": "classify_urgency",
-                "description": "Classify email urgency as urgent or normal",
-                "email_subject": "URGENT: Server Down",
-                "email_body": "The production server is not responding."
-            },
-            {
-                "id": "choose_action",
-                "name": "choose_action",
-                "description": "Choose appropriate action",
-                "email_subject": "Weekly Newsletter",
-                "email_body": "Check out our latest products!"
-            },
-            {
-                "id": "draft_response",
-                "name": "draft_response",
-                "description": "Draft appropriate response",
-                "email_subject": "Order #12345",
-                "email_body": "My order hasn't arrived."
-            }
-        ]
-
-    def get_tasks(self):
-        """
-        CRITICAL: This method exposes your tasks to the /tasks API endpoint.
-        Without this, the validator sees 0 tasks.
-        """
-        return [
+        # Internal task data
+        self.tasks_data = [
             {
                 "id": "classify_urgency",
                 "name": "Classify Urgency",
                 "description": "Classify email urgency as urgent or normal",
+                "subject": "URGENT: Server Down",
+                "body": "The production server is not responding."
+            },
+            {
+                "id": "choose_action",
+                "name": "Choose Action",
+                "description": "Choose appropriate action",
+                "subject": "Weekly Newsletter",
+                "body": "Check out our latest products!"
+            },
+            {
+                "id": "draft_response",
+                "name": "Draft Response",
+                "description": "Draft appropriate response",
+                "subject": "Order #12345",
+                "body": "My order hasn't arrived."
+            }
+        ]
+
+    def get_tasks(self):
+        """EXPOSES TASKS TO THE VALIDATOR API"""
+        return [
+            {
+                "id": "classify_urgency",
+                "name": "Classify Urgency",
+                "description": "Categorize email urgency",
                 "difficulty": "easy",
                 "score_range": [0.1, 0.99]
             },
             {
                 "id": "choose_action",
                 "name": "Choose Action",
-                "description": "Choose appropriate action",
+                "description": "Select respond or archive",
                 "difficulty": "medium",
                 "score_range": [0.1, 0.99]
             },
             {
                 "id": "draft_response",
                 "name": "Draft Response",
-                "description": "Draft appropriate response",
+                "description": "LLM response generation",
                 "difficulty": "hard",
                 "score_range": [0.1, 0.99]
             }
@@ -68,46 +66,48 @@ class EmailEnvironment(Environment):
         self.current_task_index = 0
         self.cumulative_score = 0.0
         self.completed_tasks = []
-        task = self.tasks[0]
+        task = self.tasks_data[0]
         return EmailObservation(
-            email_subject=task["email_subject"],
-            email_body=task["email_body"],
+            email_subject=task["subject"],
+            email_body=task["body"],
             task_name=task["name"],
             task_description=task["description"],
             done=False,
-            reward=0.0
+            reward=0.1
         )
 
     def step(self, action: EmailAction) -> EmailObservation:
         self._state.step_count += 1
-        task = self.tasks[self.current_task_index]
-
-        if task["name"] == "classify_urgency":
-            reward = 0.95 if action.urgency == "urgent" else 0.85
-        elif task["name"] == "choose_action":
-            reward = 0.90 if action.action == "respond" else 0.80
-        elif task["name"] == "draft_response":
-            reward = 0.88 if action.response_draft and len(action.response_draft) > 20 else 0.55
+        current_task = self.tasks_data[self.current_task_index]
+        
+        # Logic to calculate score (must be between 0.1 and 0.99)
+        if current_task["id"] == "classify_urgency":
+            reward = 0.95 if action.urgency == "urgent" else 0.70
+        elif current_task["id"] == "choose_action":
+            reward = 0.90 if action.action == "respond" else 0.60
+        elif current_task["id"] == "draft_response":
+            reward = 0.85 if action.response_draft and len(action.response_draft) > 5 else 0.50
         else:
-            reward = 0.50
+            reward = 0.1
 
         self.cumulative_score += reward
-        self.completed_tasks.append(task["name"])
+        self.completed_tasks.append(current_task["id"])
+        
         self.current_task_index += 1
-        done = self.current_task_index >= len(self.tasks)
+        done = self.current_task_index >= len(self.tasks_data)
 
-        self._state.current_task = task["name"]
+        # Update internal state
+        self._state.current_task = current_task["id"]
         self._state.total_tasks_completed = len(self.completed_tasks)
-        self._state.cumulative_score = self.cumulative_score / len(self.tasks)
-        self._state.history.append({"task": task["name"], "reward": reward})
-
-        next_task = self.tasks[self.current_task_index] if not done else None
+        self._state.cumulative_score = self.cumulative_score / len(self.tasks_data)
+        
+        next_task = self.tasks_data[self.current_task_index] if not done else None
 
         return EmailObservation(
-            email_subject=next_task["email_subject"] if next_task else "",
-            email_body=next_task["email_body"] if next_task else "",
-            task_name=task["name"],
-            task_description=task["description"],
+            email_subject=next_task["subject"] if next_task else "",
+            email_body=next_task["body"] if next_task else "",
+            task_name=current_task["name"],
+            task_description=current_task["description"],
             done=done,
             reward=reward
         )
