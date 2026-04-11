@@ -1,39 +1,30 @@
 version: 1
-name: EmailTriageEnv
-description: "Email triage environment for classifying and responding to customer emails."
-
 tasks:
-  - id: classify_urgency
-    name: classify_urgency
-    description: "Classify email urgency as urgent or normal"
-    difficulty: easy
-    score_range: [0.0, 1.0]
+  - id: "classify_urgency"
+    name: "Classify Urgency"
+    description: "Categorize email urgency"
+    difficulty: "easy"
+    score_range: [0.1, 0.99]
     grader:
-      type: threshold
-      rubric:
-        - condition: "urgency == 'urgent'"
-          reward: 0.95
-        - condition: "urgency == 'normal'"
-          reward: 0.85
+      type: "threshold"
+      threshold: 0.5
+      condition: "score > 0.5"
 
-  - id: choose_action
-    name: choose_action
-    description: "Choose appropriate action (respond or archive)"
-    difficulty: medium
-    score_range: [0.0, 1.0]
+  - id: "choose_action"
+    name: "Choose Action"
+    description: "Select respond or archive"
+    difficulty: "medium"
+    score_range: [0.1, 0.99]
     grader:
-      type: threshold
-      rubric:
-        - condition: "action == 'respond' and urgency == 'urgent'"
-          reward: 0.90
-        - condition: "action == 'archive' and urgency == 'normal'"
-          reward: 0.80
+      type: "threshold"
+      threshold: 0.5
+      condition: "score > 0.5"
 
-  - id: draft_response
-    name: draft_response
-    description: "Draft appropriate response for customer email"
-    difficulty: hard
-    score_range: [0.0, 1.0]
+  - id: "draft_response"
+    name: "Draft Response"
+    description: "LLM response generation"
+    difficulty: "hard"
+    score_range: [0.1, 0.99]
     grader:
-      type: llm_judge
-      prompt: "Evaluate if the response draft professionally addresses the customer's concern and provides a clear solution."
+      type: "llm_judge"
+      prompt: "Rate the response quality from 0.1 to 0.99 based on professionalism."
